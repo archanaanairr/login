@@ -1,6 +1,8 @@
 package com.jwt.LoginBackend.service;
 
+import com.jwt.LoginBackend.model.Emergency;
 import com.jwt.LoginBackend.model.Users;
+import com.jwt.LoginBackend.repo.EmergencyRepo;
 import com.jwt.LoginBackend.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,6 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @Service
@@ -21,6 +25,8 @@ public class UserService {
 
     @Autowired
     private UserRepo repo;
+    @Autowired
+    private EmergencyRepo emergencyRepo;
 
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
@@ -51,5 +57,26 @@ public class UserService {
 
     public Users getuserdetails(String username) {
         return repo.findByUsername(username);
+    }
+
+    public Emergency  createemergency(@RequestBody  Emergency emergency) {
+        return emergencyRepo.save(emergency);
+    }
+    public Iterable<Emergency> getallemergency() {
+        return emergencyRepo.findAll();
+    }
+  public Emergency  getemergency(int eid) {
+        return emergencyRepo.findById(eid).get();
+    }
+
+    public void deleteemergency(int eid) {
+        emergencyRepo.deleteById(eid);
+    }
+
+    public  Emergency  updateemergencystatus(@PathVariable int eid) {
+        Emergency emergency = emergencyRepo.findById(eid).get();
+        emergency.setStatus("Resolved");
+        return emergencyRepo.save(emergency);
+
     }
 }
